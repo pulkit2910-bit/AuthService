@@ -11,7 +11,7 @@ class UserService {
             const user = await this.userRepository.create(data);
             return user;
         } catch (error) {
-            console.log('Something wrong in user service');
+            throw {error};
         }
     }
 

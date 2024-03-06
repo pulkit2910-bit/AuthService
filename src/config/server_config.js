@@ -1,6 +1,7 @@
-const bcrypt = require('bcrypt');
+const dotenv = require("dotenv");
+dotenv.config();
 
 module.exports = {
-    SALT : bcrypt.genSaltSync(10),
-    PORT : process.env.PORT
+    PORT : process.env.PORT,
+    SALT_ROUNDS : process.env.SALT_ROUNDS
 }
