@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 const {JWT_KEY} = require('../config/server_config');
+const {Role} = require('../models/index');
 
 class UserService {
 
@@ -32,7 +33,7 @@ class UserService {
             }
             // If passwords match then create JWT token and send it to the user
             const newJWT = this.createToken({email: user.email, id: user.id});
-            return newJWT;
+            return {token: newJWT, userId: user.id};
         } catch (error) {
             console.log("Something went wrong in the sign in process");
             throw error;
@@ -58,6 +59,38 @@ class UserService {
             return user.id;
         } catch (error) {
             console.log("Something went wrong in the authentication process");
+            throw error;
+        }
+    }
+
+    async isAdmin(userId) {
+        try {
+            const roles = await this.userRepository.getRole(userId);
+            console.log(roles);
+            
+            const isAdmin = roles.some(role => role.name === 'ADMIN');
+            return isAdmin;
+        } catch (error) {
+            console.log("Something went wrong in the isAdmin process");
+            throw error;
+        }
+    }
+
+    async assignRole(userId, roleName) {
+        try {
+            const role = await Role.findOne({ where: { name: roleName } });
+            if (!role) {
+                console.log("Role not found");
+                throw {error: 'Role not found'};
+            }
+            const user = await this.userRepository.getById(userId);
+            if (!user) {
+                console.log("User not found");
+                throw {error: 'User not found'};
+            }
+            await user.addRole(role);
+        } catch (error) {
+            console.log("Something went wrong in the assignRole process");
             throw error;
         }
     }

@@ -1,5 +1,5 @@
 const { UserService } = require("../services/index");
-const { successCodes } = require("../utils/error-codes");
+const { successCodes, serverErrorCodes } = require("../utils/error-codes");
 
 const userService = new UserService();
 
@@ -14,7 +14,7 @@ const create = async (req, res) => {
         })
     } catch (error) {
         console.log(error);
-        return res.status(500).json({
+        return res.status(serverErrorCodes.INTERNAL_SERVER_ERROR).json({
             data : {},
             success : false,
             message : "Not able to create User",
@@ -25,16 +25,16 @@ const create = async (req, res) => {
 
 const signIn = async (req, res) => {
     try {
-        const user = await userService.signIn(req.body.email, req.body.password);
+        const response = await userService.signIn(req.body.email, req.body.password);
         return res.status(successCodes.OK).json({
-            data : user,
+            data : response,
             success : true,
             message : "Successfully SignedIn User",
             err : {}
         })
     } catch (error) {
         console.log(error);
-        return res.status(500).json({
+        return res.status(serverErrorCodes.INTERNAL_SERVER_ERROR).json({
             data : {},
             success : false,
             message : "Not able to SignIn User",
@@ -55,7 +55,7 @@ const isAuthenticated = async (req, res) => {
         })
     } catch (error) {
         console.log(error);
-        return res.status(500).json({
+        return res.status(serverErrorCodes.INTERNAL_SERVER_ERROR).json({
             data : {},
             success : false,
             message : "Not able to Authenticate User",
@@ -64,8 +64,52 @@ const isAuthenticated = async (req, res) => {
     }
 }
 
+const isAdmin = async (req, res) => {
+    try {
+        const userId = req.body.userId;
+        const isAdmin = await userService.isAdmin(userId);
+        return res.status(successCodes.OK).json({
+            data : isAdmin,
+            success : true,
+            message : "Successfully Fetched User Role",
+            err : {}
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(serverErrorCodes.INTERNAL_SERVER_ERROR).json({
+            data : {},
+            success : false,
+            message : "Not able to Fetch User Role",
+            err : error
+        })
+    }
+}
+
+const assignRole = async (req, res) => {
+    try {
+        const { userId, roleName } = req.body;
+        await userService.assignRole(userId, roleName);
+        return res.status(successCodes.OK).json({
+            data: {},
+            success: true,
+            message: "Role assigned successfully",
+            err: {}
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(serverErrorCodes.INTERNAL_SERVER_ERROR).json({
+            data: {},
+            success: false,
+            message: "Failed to assign role",
+            err: error
+        });
+    }
+};
+
 module.exports = {
     create,
     signIn,
-    isAuthenticated
+    isAuthenticated,
+    isAdmin,
+    assignRole
 }

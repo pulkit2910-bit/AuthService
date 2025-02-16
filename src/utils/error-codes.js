@@ -9,7 +9,12 @@ const clientErrorCodes = Object.freeze({
     NOT_FOUND : 404
 })
 
+const serverErrorCodes = Object.freeze({
+    INTERNAL_SERVER_ERROR : 500
+})
+
 module.exports = {
     successCodes, 
-    clientErrorCodes
+    clientErrorCodes,
+    serverErrorCodes
 }

@@ -1,4 +1,4 @@
-const { User } = require('../models/index');
+const { User, Role } = require('../models/index');
 
 class UserRepository {
     
@@ -43,6 +43,21 @@ class UserRepository {
                 email: userEmail
             }});
             return user;
+        } catch (error) {
+            console.log("Something went wrong on repository layer");
+            throw error;
+        }
+    }
+
+    async getRole(userId) {
+        try {
+            const user = await User.findByPk(userId, {
+                include: Role
+            });
+            if (!user) {
+                throw {error: 'User not found'};
+            }
+            return user.Roles;
         } catch (error) {
             console.log("Something went wrong on repository layer");
             throw error;
