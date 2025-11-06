@@ -7,7 +7,7 @@ const create = async (req, res) => {
     try {
         const user = await userService.create(req.body);
         return res.status(successCodes.CREATED).json({
-            data : user,
+            data : user.id,
             success : true,
             message : "Successfully created User",
             err : {}
@@ -58,7 +58,7 @@ const isAuthenticated = async (req, res) => {
         return res.status(serverErrorCodes.INTERNAL_SERVER_ERROR).json({
             data : {},
             success : false,
-            message : "Not able to Authenticate User",
+            message : "User not authenticated",
             err : error
         })
     }
